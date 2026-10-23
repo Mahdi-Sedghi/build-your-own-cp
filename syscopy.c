@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 
 int main(int argc, char *argv[])
 {
@@ -60,3 +61,19 @@ static void put_uint(unsigned int n)
 
 }
 
+static void report_error(const char *what, const char *path)
+{
+    int saved = errno;
+    const char *msg = strerror(saved);
+
+    (void)!write(STDERR_FILENO, "syscopy: ", 9);
+    (void)!write(STDERR_FILENO, what, strlen(what));
+    if (path) {
+        (void)!write(STDERR_FILENO, " '", 2);
+        (void)!write(STDERR_FILENO, path, strlen(path));
+        (void)!write(STDERR_FILENO, "'", 1);
+    }
+    (void)!write(STDERR_FILENO, ": ", 2);
+    (void)!write(STDERR_FILENO, msg, strlen(msg));
+    (void)!write(STDERR_FILENO, "\n", 1);
+}

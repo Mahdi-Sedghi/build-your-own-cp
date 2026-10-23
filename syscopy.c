@@ -16,9 +16,27 @@ int main(int argc, char *argv[])
         close(src_fd);
         return EXIT_FAILURE;
     }
-    close(dst_fd);
 
-    close(src_fd);
+    static unsigned char buf[4096];
+
+    for (;;) {
+        ssize_t nread = read(src_fd, buf, sizeof(buf));
+        if (nread <= 0)
+            break;
+
+        (void)!write(STDERR_FILENO, "read ", 5);
+        put_uint((unsigned int)nread);
+        (void)!write(STDERR_FILENO, " bytes\n", 7);
+    }
+
     return EXIT_SUCCESS;
+}
+
+static void put_uint(unsigned int n)
+{
+    char b[12];
+    int i = (int)sizeof(b);
+    do { b[--i] = (char)('0' + n % 10); n /= 10; } while (n);
+    (void)!write(STDERR_FILENO, &b[i], sizeof(b) - (size_t)i);
 }
 

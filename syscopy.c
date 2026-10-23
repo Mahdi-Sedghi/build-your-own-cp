@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
         if (nread <= 0)
             break;
 
-        (void)!write(STDERR_FILENO, "read ", 5);
-        put_uint((unsigned int)nread);
-        (void)!write(STDERR_FILENO, " bytes\n", 7);
+        ssize_t nw = write(dst_fd, buf, (size_t)nread);
+	if (nw < 0)
+		break;
     }
 
     return EXIT_SUCCESS;

@@ -15,7 +15,14 @@ int main(int argc, char *argv[])
 
     int dst_fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (dst_fd < 0) {
-        close(src_fd);
+        if (close(dst_fd) < 0) {
+    	    report_error("close failed", argv[2]);
+ 	    goto fail;
+       	}
+   	if (close(src_fd) < 0) {
+   	    report_error("close failed", argv[1]);
+    	    goto fail;
+   	}
         return EXIT_FAILURE;
     }
 

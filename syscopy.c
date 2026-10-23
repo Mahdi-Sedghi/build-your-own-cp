@@ -1,6 +1,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <errno.h>
 
 int main(int argc, char *argv[])
 {
@@ -27,6 +28,13 @@ int main(int argc, char *argv[])
         ssize_t nw = write(dst_fd, buf, (size_t)nread);
 	if (nw < 0)
 		break;
+
+        if (nread < 0) {
+            if (errno == EINTR)
+                continue;
+            goto fail;
+        }
+
     }
 
     return EXIT_SUCCESS;
@@ -42,8 +50,11 @@ static void put_uint(unsigned int n)
     ssize_t off = 0; 
     while (off < nread) {
         ssize_t nw = write(dst_fd, buf + off, (size_t)(nread - off));
-        if (nw < 0)
+        if (nw < 0) {
+            if (errno == EINTR)
+		    continue;
             goto fail;
+	}
         off += nw;
     }
 

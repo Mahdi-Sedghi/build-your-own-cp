@@ -37,6 +37,15 @@ static void put_uint(unsigned int n)
     char b[12];
     int i = (int)sizeof(b);
     do { b[--i] = (char)('0' + n % 10); n /= 10; } while (n);
-    (void)!write(STDERR_FILENO, &b[i], sizeof(b) - (size_t)i);
+    
+
+    ssize_t off = 0; 
+    while (off < nread) {
+        ssize_t nw = write(dst_fd, buf + off, (size_t)(nread - off));
+        if (nw < 0)
+            goto fail;
+        off += nw;
+    }
+
 }
 

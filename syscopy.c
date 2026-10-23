@@ -46,6 +46,15 @@ int main(int argc, char *argv[])
     }
 
     return EXIT_SUCCESS;
+
+fail:
+    if (dst_fd >= 0) {
+        close(dst_fd);
+        unlink(argv[2]);
+    }
+    if (src_fd >= 0)
+        close(src_fd);
+    return EXIT_FAILURE;
 }
 
 static void put_uint(unsigned int n)
